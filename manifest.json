@@ -3,7 +3,10 @@
   "name": "Sharkbook Chrome Extension",
   "version": "1.0",
   "description": "A basic Chrome Extension for Sharkbook",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "sidePanel"],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_title": "Sharkbook Extension"
