@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         value: el.value || '',
         isVisible: el.offsetParent !== null // 简单检查元素是否可见
       };
-    }).filter(item => item.type !== 'hidden' && item.type !== 'submit' && item.type !== 'button'); // 过滤掉隐藏域和按钮
+    }).filter(item => item.isVisible && item.type !== 'hidden' && item.type !== 'submit' && item.type !== 'button'); // 过滤掉不可见、隐藏域和按钮
 
     console.table(inputData);
     sendResponse({ success: true, data: inputData });

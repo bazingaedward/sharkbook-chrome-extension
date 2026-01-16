@@ -109,33 +109,42 @@ document.getElementById('startBtn').addEventListener('click', async () => {
   }`;
 
     try {
-      const response = await fetch('https://sharkbook.org/api/chat', {
+      // Generate random IDs for the request
+      const generateId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      
+      const response = await fetch('https://sharkbook.org/api/generate-text', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          id: generateId(),
           messages: [
-            { role: 'user', content: prompt }
-          ]
+            { 
+              role: 'user', 
+              parts: [
+                { type: 'text', text: prompt }
+              ],
+              id: generateId()
+            }
+          ],
+          trigger: 'submit-message'
         })
       });
-      console.log('AI API raw response:', response);
 
       if (!response.ok) {
         throw new Error(`AI API request failed: ${response.status}`);
       }
 
-      // Handle Vercel AI SDK response which might be a stream or plain text
-      // We will attempt to read the full text and parse the JSON from it.
-      // Note: If the API returns a Vercel stream-data format (0:"..."), this naive parsing might fail
-      // without a stream decoder, but for "start implementation" we assume standard text/json content 
-      // or that we can regex extract the JSON.
-      const rawText = await response.text();
-      let jsonStr = rawText;
+      // Parse the API response JSON
+      const result = await response.json();
+      console.log('AI API result:', result);
+      
+      // Extract the text field which contains the AI-generated JSON string
+      let jsonStr = result.text || '';
 
       // Basic cleanup to extract JSON if embedded in text or markdown
-      const jsonBlockMatch = rawText.match(/\{[\s\S]*\}/);
+      const jsonBlockMatch = jsonStr.match(/\{[\s\S]*\}/);
       if (jsonBlockMatch) {
         jsonStr = jsonBlockMatch[0];
       }
@@ -145,9 +154,7 @@ document.getElementById('startBtn').addEventListener('click', async () => {
       try {
         suggestions = JSON.parse(jsonStr);
       } catch (e) {
-        // If simple parse fails, try to clean Vercel stream artifacts if visible (e.g. 0:"{")
-        // preventing complex stream parsing logic for this MVP step unless requested.
-        console.warn("Direct JSON parse failed, raw response:", rawText);
+        console.warn("Direct JSON parse failed, raw text:", result.text);
         throw new Error("Failed to parse AI response as JSON");
       }
 

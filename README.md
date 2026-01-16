@@ -1,51 +1,50 @@
-# Sharkbook Chrome Extension
+# Sharkbook AI Form Filler
 
-A powerful Chrome Extension for Sharkbook that integrates AI capabilities to assist with web page interactions, specifically designed for smart form analysis and auto-filling.
+一款由 Sharkbook AI 驱动的智能表单自动填充 Chrome 扩展插件。
 
-## 🚀 Key Features
+## 🚀 核心功能
 
-### 1. 🤖 AI Form Assistant (Side Panel)
-A "Monica AI" style sidebar assistant that stays with you while you browse.
-- **Smart Analysis**: Scans the current web page to identify all interactive input fields (text inputs, textareas, etc.).
-- **AI Auto-Fill**: Uses an LLM (currently integrated with a mock provider) to intelligently generate content based on field labels and context.
-- **One-Click Fill**: Automatically populates form data back into the web page.
+### 🤖 AI 智能表单填充
+侧边栏式 AI 助手，为你自动分析和填充网页表单。
 
-### 2. 📸 Screen Capture
-- **Instant Screenshot**: Capture the visible area of your current tab with a single click.
-- **Preview**: Logs the Base64 image data for development or further processing.
+- **智能识别**：自动扫描当前页面的所有表单字段（输入框、文本域等）
+- **AI 生成**：基于字段名称和上下文，智能生成合适的填充内容
+- **一键填充**：一键将 AI 生成的内容填入表单
 
-### 3. 🔍 Page Inspector
-- **List Inputs**: specific developer tool to log detailed information about all input elements on the current page to the console.
+## 🛠 安装方法
 
-## 🛠 Installation
+1. 克隆或下载本项目源代码
+2. 打开 Chrome，访问 `chrome://extensions/`
+3. 开启右上角的 **开发者模式**
+4. 点击左上角 **加载已解压的扩展程序**
+5. 选择 `sharkbook-chrome-extension` 目录
 
-1. Clone this repository or download the source code.
-2. Open Chrome and navigate to `chrome://extensions/`.
-3. Enable **"Developer mode"** in the top right corner.
-4. Click **"Load unpacked"** in the top left corner.
-5. Select the `sharkbook-chrome-extension` directory.
+## 📖 使用指南
 
-## 📖 Usage Guide
+1. 点击工具栏中的 **Sharkbook 图标**，自动打开侧边栏
+2. 打开任意包含表单的网页（如注册页、联系表单等）
+3. 点击 **开始分析**
+4. 扩展会识别表单字段并生成 AI 建议内容
+5. 点击 **一键填充** 将内容应用到页面
 
-### Using the AI Assistant
-1. Click the **Sharkbook Extension icon** in the toolbar.
-2. Click **"Open AI Assistant"** to launch the Side Panel (or use Chrome's side panel menu).
-3. Navigate to any page with a form (e.g., a contact form or signup page).
-4. In the side panel, click **"Start Analysis"**.
-5. The extension will identify fields and generate suggestions.
-6. Click **"Fill Page Inputs"** to apply the changes.
+## 📂 项目结构
 
-## 📂 Project Structure
+```
+├── manifest.json       # 扩展配置文件 (Manifest V3)
+├── sidepanel.html      # 侧边栏界面
+├── sidepanel.js        # 侧边栏逻辑（AI 调用核心）
+├── content.js          # 内容脚本（表单识别与填充）
+├── background.js       # Service Worker
+└── icons/              # 扩展图标
+```
 
-- `manifest.json`: Configuration (MV3) with Side Panel permissions.
-- `sidepanel.html` & `sidepanel.js`: **[Core]** The AI Assistant sidebar interface and logic.
-- `popup.html` & `popup.js`: The quick-access menu for screenshots and opening the assistant.
-- `content.js`: Handles DOM interactions (scraping inputs and filling values).
-- `background.js`: Service worker handling extension lifecycle.
+## 🔧 技术栈
 
-## 🔧 Technology
+- **Chrome Manifest V3**
+- **Chrome Side Panel API** - 侧边栏 UI
+- **Sharkbook AI API** - 智能内容生成
+- **Chrome Scripting API** - 页面交互
 
-- **Manifest V3**
-- **Chrome Side Panel API** for persistent UI.
-- **Scripting API** for page interaction.
+## 📄 许可证
 
+MIT License

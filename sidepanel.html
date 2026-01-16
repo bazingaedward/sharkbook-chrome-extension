@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Sharkbook Assistant</title>
+  <title>Sharkbook AI Form Filler</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -83,18 +83,18 @@
   </style>
 </head>
 <body>
-  <h1>Sharkbook AI</h1>
+  <h1>Sharkbook AI Form Filler</h1>
 
   <div class="card">
-    <p style="font-size: 13px; margin-top: 0;">Click start to analyze the current page form and generate content.</p>
-    <button id="startBtn">Start Analysis</button>
-    <div id="status">Ready</div>
+    <p style="font-size: 13px; margin-top: 0;">智能分析当前页面表单，AI 自动生成填充内容</p>
+    <button id="startBtn">开始分析</button>
+    <div id="status">就绪</div>
   </div>
 
   <div id="resultsArea" class="hidden">
-    <h3>Identified Inputs</h3>
+    <h3>识别到的表单字段</h3>
     <div id="inputsList"></div>
-    <button id="fillBtn" style="background-color: #28a745; margin-top: 10px;">Fill Page Inputs</button>
+    <button id="fillBtn" style="background-color: #28a745; margin-top: 10px;">一键填充</button>
   </div>
 
   <script src="sidepanel.js"></script>
