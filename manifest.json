@@ -3,7 +3,7 @@
   "name": "Sharkbook AI Form Filler",
   "version": "1.0",
   "description": "AI-powered smart form auto-fill assistant by Sharkbook",
-  "permissions": ["activeTab", "scripting", "sidePanel"],
+  "permissions": ["activeTab", "scripting", "sidePanel", "storage"],
   "host_permissions": [
     "https://sharkbook.org/*"
   ],
