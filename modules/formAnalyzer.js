@@ -1,90 +1,17 @@
-// ===== 主题管理系统 =====
-const ThemeManager = {
-  STORAGE_KEY: 'sharkbook_theme',
-  
-  // 初始化主题
-  async init() {
-    // 1. 尝试从存储中读取用户偏好
-    const stored = await this.getStoredTheme();
+// ===== Form Analyzer =====
+const FormAnalyzer = {
+  init() {
+    const startBtn = document.getElementById('startBtn');
+    if (!startBtn) return;
     
-    if (stored) {
-      this.applyTheme(stored);
-    } else {
-      // 2. 读取系统主题偏好
-      const systemTheme = this.getSystemTheme();
-      this.applyTheme(systemTheme);
-    }
-    
-    // 3. 监听系统主题变化
-    this.watchSystemTheme();
-    
-    // 4. 绑定切换按钮事件
-    this.bindToggleButton();
+    startBtn.addEventListener('click', () => this.analyze());
   },
-  
-  // 获取系统主题
-  getSystemTheme() {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  },
-  
-  // 获取存储的主题
-  async getStoredTheme() {
-    try {
-      const result = await chrome.storage.local.get(this.STORAGE_KEY);
-      return result[this.STORAGE_KEY] || null;
-    } catch (e) {
-      console.warn('Failed to get stored theme:', e);
-      return null;
-    }
-  },
-  
-  // 保存主题到存储
-  async saveTheme(theme) {
-    try {
-      await chrome.storage.local.set({ [this.STORAGE_KEY]: theme });
-    } catch (e) {
-      console.warn('Failed to save theme:', e);
-    }
-  },
-  
-  // 应用主题
-  applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    this.currentTheme = theme;
-  },
-  
-  // 切换主题
-  async toggle() {
-    const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
-    this.applyTheme(newTheme);
-    await this.saveTheme(newTheme);
-  },
-  
-  // 监听系统主题变化
-  watchSystemTheme() {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async (e) => {
-      // 只有在用户没有手动设置主题时才跟随系统
-      const stored = await this.getStoredTheme();
-      if (!stored) {
-        this.applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-  },
-  
-  // 绑定主题切换按钮
-  bindToggleButton() {
-    const toggleBtn = document.getElementById('themeToggle');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => this.toggle());
-    }
-  }
-};
 
-// 初始化主题
-ThemeManager.init();
-
-// ===== 表单分析功能 =====
-document.getElementById('startBtn').addEventListener('click', async () => {
+  showLoading(statusEl, message) {
+    statusEl.innerHTML = `<span class="loading"><span class="spinner"></span>${message}</span>`;
+  },
+  
+  async analyze() {
     const statusEl = document.getElementById('status');
     const startBtn = document.getElementById('startBtn');
     const resultsArea = document.getElementById('resultsArea');
@@ -92,7 +19,7 @@ document.getElementById('startBtn').addEventListener('click', async () => {
     
     startBtn.disabled = true;
     resultsArea.classList.add('hidden');
-    statusEl.innerText = 'Scanning page inputs...';
+    this.showLoading(statusEl, 'Scanning page inputs...');
   
     try {
       // 1. Get the current active tab
@@ -112,18 +39,18 @@ document.getElementById('startBtn').addEventListener('click', async () => {
       }
   
       // 3. AI Processing
-      statusEl.innerText = `Found ${response.data.length} inputs. Asking AI...`;
+      this.showLoading(statusEl, `Found ${response.data.length} inputs. Asking AI...`);
       
-      const aiResponse = await askAI(response.data);
+      const aiResponse = await this.askAI(response.data);
       
       // 4. Render results
-      renderResults(aiResponse);
+      this.renderResults(aiResponse);
       
-      statusEl.innerText = 'Analysis complete.';
+      statusEl.innerText = 'Analysis complete. Edit values if needed.';
       resultsArea.classList.remove('hidden');
       
-      // Store data for filling
-      document.getElementById('fillBtn').onclick = () => fillPage(tab.id, aiResponse);
+      // Store data for filling - use currentResults which may be edited
+      document.getElementById('fillBtn').onclick = () => this.fillPage(tab.id, this.currentResults);
   
     } catch (err) {
       console.error(err);
@@ -131,9 +58,9 @@ document.getElementById('startBtn').addEventListener('click', async () => {
     } finally {
       startBtn.disabled = false;
     }
-  });
+  },
   
-  async function fillPage(tabId, dataWithValues) {
+  async fillPage(tabId, dataWithValues) {
     const statusEl = document.getElementById('status');
     statusEl.innerText = 'Filling inputs...';
     try {
@@ -145,25 +72,86 @@ document.getElementById('startBtn').addEventListener('click', async () => {
     } catch (err) {
       statusEl.innerText = 'Fill Error: ' + err.message;
     }
-  }
+  },
   
-  function renderResults(data) {
+  // Store current results for editing
+  currentResults: [],
+
+  renderResults(data) {
+    this.currentResults = [...data];
     const container = document.getElementById('inputsList');
     container.innerHTML = '';
     
-    data.forEach(item => {
+    data.forEach((item, index) => {
       const div = document.createElement('div');
       div.className = 'input-item';
+      div.dataset.index = index;
       div.innerHTML = `
-        <label>${item.label || item.name || item.id}</label>
-        <div class="val-preview">AI: "${item.value}"</div>
+        <div class="input-item-header">
+          <label>${item.label || item.name || item.id}</label>
+          <div class="input-item-actions">
+            <button class="btn-edit" title="Edit" data-index="${index}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button class="btn-delete" title="Delete" data-index="${index}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <input type="text" class="val-input" value="${this.escapeHtml(item.value)}" data-index="${index}" />
       `;
       container.appendChild(div);
     });
-  }
+
+    // Bind events
+    this.bindResultEvents(container);
+  },
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  },
+
+  bindResultEvents(container) {
+    // Handle input changes
+    container.querySelectorAll('.val-input').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        this.currentResults[index].value = e.target.value;
+      });
+    });
+
+    // Handle delete
+    container.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.currentTarget.dataset.index);
+        this.deleteResult(index);
+      });
+    });
+  },
+
+  deleteResult(index) {
+    this.currentResults.splice(index, 1);
+    this.renderResults(this.currentResults);
+    
+    // Update status
+    const statusEl = document.getElementById('status');
+    if (this.currentResults.length === 0) {
+      document.getElementById('resultsArea').classList.add('hidden');
+      statusEl.innerText = 'All fields removed.';
+    }
+  },
   
-  // === AI FUNCTION ===
-  async function askAI(inputs) {
+  async askAI(inputs) {
+    // 获取用户个人资料
+    const userProfile = await UserDataManager.getStoredProfile();
+    
     // Construct a prompt for the AI
     const simplifiedInputs = inputs.map(i => ({
       id: i.id,
@@ -173,8 +161,18 @@ document.getElementById('startBtn').addEventListener('click', async () => {
       currentValue: i.value
     }));
 
+    // 构建包含用户资料的 prompt
+    let userContext = '';
+    if (userProfile && userProfile.trim()) {
+      userContext = `
+User Profile (use this information to fill the form):
+${userProfile}
+
+`;
+    }
+
     const prompt = `You are a helpful automated assistant that fills out web forms.
-  Analyze the following form inputs and provide realistic, context-aware values for them.
+${userContext}Analyze the following form inputs and provide realistic, context-aware values for them.
   
   Inputs:
   ${JSON.stringify(simplifiedInputs, null, 2)}
@@ -184,8 +182,9 @@ document.getElementById('startBtn').addEventListener('click', async () => {
   2. The keys must be the input IDs provided in the list.
   3. The values should be the suggested content for that input.
   4. Do not include any explanation or markdown formatting (like \`\`\`json).
-  5. If an input seems to be for searching, provide a relevant search term.
-  6. If an input is a comment section, provide a polite, generic comment.
+  5. If user profile is provided, use that information to fill matching fields.
+  6. If an input seems to be for searching, provide a relevant search term.
+  7. If an input is a comment section, provide a polite, generic comment.
   
   Example Response Format:
   {
@@ -254,3 +253,4 @@ document.getElementById('startBtn').addEventListener('click', async () => {
       throw error;
     }
   }
+};

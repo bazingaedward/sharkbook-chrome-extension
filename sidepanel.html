@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -220,6 +220,186 @@
       border-radius: 4px;
     }
 
+    .input-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .input-item-header label {
+      margin-bottom: 0;
+    }
+
+    .input-item-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .input-item-actions button {
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .input-item-actions button:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .input-item-actions .btn-delete:hover {
+      background: #fee;
+      color: #e74c3c;
+    }
+
+    [data-theme="dark"] .input-item-actions .btn-delete:hover {
+      background: #3d1f1f;
+      color: #e74c3c;
+    }
+
+    .val-input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+      font-size: 12px;
+      transition: border-color 0.2s ease;
+    }
+
+    .val-input:focus {
+      outline: none;
+      border-color: var(--text-muted);
+    }
+
+    /* ===== Tab 导航 ===== */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-secondary);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .tab-item {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-item:hover {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+
+    .tab-item.active {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ===== Markdown 编辑区 ===== */
+    .profile-editor {
+      width: 100%;
+      min-height: 200px;
+      max-height: 400px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.2s ease;
+    }
+
+    .profile-editor:focus {
+      outline: none;
+      border-color: var(--text-muted);
+    }
+
+    .profile-editor::placeholder {
+      color: var(--text-muted);
+    }
+
+    .char-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 8px;
+    }
+
+    .char-count.warning {
+      color: #e74c3c;
+    }
+
+    .save-status {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    .save-status.success {
+      color: #27ae60;
+    }
+
+    .profile-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    /* ===== Loading Spinner ===== */
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     /* ===== 工具类 ===== */
     .hidden {
       display: none !important;
@@ -247,8 +427,11 @@
 <body>
   <!-- Header -->
   <header class="header">
-    <h1>Sharkbook AI</h1>
-    <button class="theme-toggle" id="themeToggle" title="切换主题">
+    <div class="tab-bar">
+      <button class="tab-item active" data-tab="fill">Form Fill</button>
+      <button class="tab-item" data-tab="profile">Profile</button>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="Toggle theme">
       <!-- Sun icon (显示在 dark 模式) -->
       <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 17.5a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zm0 1.5a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-17a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 2zm0 18a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 20zM4.22 4.22a.75.75 0 0 1 1.06 0l1.06 1.06a.75.75 0 0 1-1.06 1.06L4.22 5.28a.75.75 0 0 1 0-1.06zm13.44 13.44a.75.75 0 0 1 1.06 0l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 0-1.06zM2 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5A.75.75 0 0 1 2 12zm18 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5A.75.75 0 0 1 20 12zM5.28 18.72a.75.75 0 0 1 0-1.06l1.06-1.06a.75.75 0 1 1 1.06 1.06l-1.06 1.06a.75.75 0 0 1-1.06 0zm13.44-13.44a.75.75 0 0 1 0-1.06l1.06-1.06a.75.75 0 1 1 1.06 1.06l-1.06 1.06a.75.75 0 0 1-1.06 0z"/>
@@ -260,23 +443,58 @@
     </button>
   </header>
 
-  <!-- 主功能区 -->
-  <div class="card">
-    <p class="card-title">智能表单填充</p>
-    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
-      分析当前页面表单，AI 自动生成填充内容
-    </p>
-    <button id="startBtn" class="btn btn-primary">开始分析</button>
-    <div id="status">就绪</div>
+  <!-- Tab: Form Fill -->
+  <div id="tab-fill" class="tab-content active">
+    <div class="card">
+      <p class="card-title">Smart Form Fill</p>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Analyze page forms and auto-generate content with AI
+      </p>
+      <button id="startBtn" class="btn btn-primary">Start Analysis</button>
+      <div id="status">Ready</div>
+    </div>
+
+    <!-- Results Area -->
+    <div id="resultsArea" class="card hidden">
+      <p class="results-title">Detected Form Fields</p>
+      <div id="inputsList"></div>
+      <button id="fillBtn" class="btn btn-success">Fill All</button>
+    </div>
   </div>
 
-  <!-- 结果区域 -->
-  <div id="resultsArea" class="card hidden">
-    <p class="results-title">识别到的表单字段</p>
-    <div id="inputsList"></div>
-    <button id="fillBtn" class="btn btn-success">一键填充</button>
+  <!-- Tab: Profile -->
+  <div id="tab-profile" class="tab-content">
+    <div class="card">
+      <p class="card-title">Profile</p>
+      <p class="profile-hint">
+        Write your personal info in Markdown format. AI will use this to intelligently fill forms.<br>
+        e.g. Name, email, phone, work experience, education, etc.
+      </p>
+      <textarea 
+        id="profileEditor" 
+        class="profile-editor" 
+        placeholder="# Basic Info
+Name: John Doe
+Email: john.doe@example.com
+Phone: +1-xxx-xxx-xxxx
+
+# Work Experience
+- 2020-Present: Tech Corp, Senior Engineer
+- 2018-2020: Startup Inc, Software Developer
+
+# Education
+- 2014-2018: University of Example, Computer Science"></textarea>
+      <div class="char-count" id="charCount">0 / 2000</div>
+      <button id="saveProfileBtn" class="btn btn-primary">Save Profile</button>
+      <div class="save-status" id="saveStatus"></div>
+    </div>
   </div>
 
-  <script src="sidepanel.js"></script>
+  <!-- 模块化脚本 -->
+  <script src="modules/themeManager.js"></script>
+  <script src="modules/tabManager.js"></script>
+  <script src="modules/userDataManager.js"></script>
+  <script src="modules/formAnalyzer.js"></script>
+  <script src="modules/app.js"></script>
 </body>
 </html>
