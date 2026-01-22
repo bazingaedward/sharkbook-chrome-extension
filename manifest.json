@@ -4,9 +4,7 @@
   "version": "1.0",
   "description": "AI-powered smart form auto-fill assistant by Sharkbook",
   "permissions": ["activeTab", "scripting", "sidePanel", "storage"],
-  "host_permissions": [
-    "https://sharkbook.org/*"
-  ],
+  "host_permissions": ["<all_urls>"],
   "side_panel": {
     "default_path": "sidepanel.html"
   },

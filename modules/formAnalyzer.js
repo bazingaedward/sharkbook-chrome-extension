@@ -29,9 +29,9 @@ const FormAnalyzer = {
         throw new Error("No active tab found");
       }
   
-      // 2. Request inputs from content script
+      // 2. Request inputs from content script (content.js 已通过 manifest 自动注入)
       const response = await chrome.tabs.sendMessage(tab.id, { action: "LIST_PAGE_INPUTS" });
-      
+
       if (!response || !response.success || response.data.length === 0) {
         statusEl.innerText = 'No inputs found on this page.';
         startBtn.disabled = false;
